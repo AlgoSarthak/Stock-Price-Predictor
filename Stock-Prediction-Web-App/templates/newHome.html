@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Stock Price Predictor</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <nav>
+        <a href="../templates/home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="Source.html">Source</a>
+    </nav>
+    <div class="container">
+        <h1>Stock Predictor</h1>
+        <form name="myForm" onsubmit="return submitForm()">
+            <div class="input-section">
+                <input type="text" id="stockName" placeholder="Enter stock name..." list="stockNames">
+                <datalist id="stockNames">
+                    <option value="AAPL">
+                    <option value="GOOGL">
+                    <option value="AMZN">
+                    <option value="MSFT">
+                    <option value="TSLA">
+                </datalist>
+                <div class="date-inputs">
+                    <input type="number" id="numOfDays" placeholder="Enter number of days" min="1" max="7">
+                    <input type="date" id="fromDate" readonly>
+                    <input type="date" id="endDate">
+                </div>
+                <br>
+                <input type="submit" value="Submit" style="cursor: pointer;">
+            </div>
+        </form>
+
+        <div id="resultsTable"></div>
+
+    </div>
+
+    <script>
+        document.getElementById('fromDate').valueAsDate = new Date();
+        document.getElementById('endDate').valueAsDate = new Date();
+        var today = new Date().toISOString().split('T')[0];
+        var nextWeekDate = new Date(new Date().getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        document.getElementById('endDate').setAttribute('min', today);
+        document.getElementById('endDate').setAttribute('max', nextWeekDate);
+        function updateDays() {
+            var endDateInput = document.getElementById('endDate');
+            var numOfDaysInput = document.getElementById('numOfDays');
+
+            if (endDateInput.value) {
+                var endDate = new Date(endDateInput.value);
+                var currentDate = new Date();
+                var timeDifference = endDate.getTime() - currentDate.getTime();
+                var daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+                numOfDaysInput.value = daysDifference + 1;
+            } else {
+                numOfDaysInput.value = '';
+            }
+        }
+
+        function updateEndDate() {
+            var endDateInput = document.getElementById('endDate');
+            var numOfDaysInput = document.getElementById('numOfDays');
+
+            if (numOfDaysInput.value) {
+                var numOfDays = parseInt(numOfDaysInput.value);
+                var currentDate = new Date();
+                var endDate = new Date(currentDate.getTime() + ((numOfDays - 1) * 24 * 60 * 60 * 1000));
+                var maxEndDate = new Date(currentDate.getTime() + (7 * 24 * 60 * 60 * 1000));
+
+                if (endDate > maxEndDate) {
+                    endDateInput.valueAsDate = maxEndDate;
+                } else {
+                    endDateInput.valueAsDate = endDate;
+                }
+            } else {
+                endDateInput.valueAsDate = null;
+            }
+        }
+
+        // Call the updateDays function when the endDate input changes
+        document.getElementById('endDate').addEventListener('input', updateDays);
+
+        // Call the updateEndDate function when the numOfDays input changes
+        document.getElementById('numOfDays').addEventListener('input', updateEndDate);
+        function submitForm() {
+            var stockName = document.getElementById('stockName').value;
+            var numOfDays = parseInt(document.getElementById('numOfDays').value);
+
+            if (numOfDays > 7 || numOfDays < 1) {
+                alert("Please enter number of days between 1 and 7");
+                return false;
+            }
+
+            // Simulate fetching model predictions (replace this with actual API call)
+            var predictions = getPredictions(stockName, numOfDays);
+
+            // Create the table to display predictions
+            var tableHtml = '<h2>Predictions for the next ' + numOfDays + ' days:</h2>';
+            tableHtml += '<table><tr><th>Date</th><th>Day</th><th>Expected Price</th><th>Percentage Difference from Prev Day</th></tr>';
+
+            for (var i = 0; i < predictions.length; i++) {
+                var prediction = predictions[i];
+                tableHtml += '<tr><td>' + prediction.date + '</td><td>' + prediction.day + '</td><td>' + prediction.expected_price + '</td><td>' + prediction.percentage_difference + '</td></tr>';
+            }
+
+            tableHtml += '</table>';
+
+            document.getElementById('resultsTable').innerHTML = tableHtml;
+
+            return false; // Prevent the form from submitting normally
+        }
+
+        // Simulated function to get model predictions (replace this with actual API call)
+        function getPredictions(stockName, numOfDays) {
+            // This is just an example, replace it with your actual logic to get predictions
+            var predictions = [];
+            for (var i = 1; i <= numOfDays; i++) {
+                var date = new Date();
+                date.setDate(date.getDate() + i);
+
+                predictions.push({
+                    date: date.toISOString().split('T')[0],
+                    day: i,
+                    expected_price: Math.random() * 100, // Replace this with actual prediction value
+                    percentage_difference: Math.random() * 10 // Replace this with actual percentage difference
+                });
+            }
+            return predictions;
+        }
+
+    </script>
+</body>
+
+</html>

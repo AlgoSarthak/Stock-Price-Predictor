@@ -1,0 +1,12 @@
+README.md
+setup.py
+Stock_Prediction_App.egg-info/PKG-INFO
+Stock_Prediction_App.egg-info/SOURCES.txt
+Stock_Prediction_App.egg-info/dependency_links.txt
+Stock_Prediction_App.egg-info/requires.txt
+Stock_Prediction_App.egg-info/top_level.txt
+src/__init__.py
+src/data_processing.py
+src/exception.py
+src/logger.py
+src/stockdata.py
